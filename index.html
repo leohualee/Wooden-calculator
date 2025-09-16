@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>木盒子切割計算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-orange-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-amber-800 mb-2">🪵 木盒子切割計算器</h1>
+            <p class="text-amber-600">計算製作木盒子所需的木材切割方式</p>
+        </div>
+
+        <div class="grid lg:grid-cols-1 gap-6">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">步驟一：📏 盒子尺寸設定 (外徑)</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">長度 (mm)</label>
+                        <div class="number-input-group">
+                            <button onclick="adjustValue('boxLength', -10)">-</button>
+                            <input type="number" id="boxLength" value="70" min="1" class="w-full text-center">
+                            <button onclick="adjustValue('boxLength', 10)">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">寬度 (mm)</label>
+                        <div class="number-input-group">
+                            <button onclick="adjustValue('boxWidth', -10)">-</button>
+                            <input type="number" id="boxWidth" value="60" min="1" class="w-full text-center">
+                            <button onclick="adjustValue('boxWidth', 10)">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">高度 (mm)</label>
+                        <div class="number-input-group">
+                            <button onclick="adjustValue('boxHeight', -10)">-</button>
+                            <input type="number" id="boxHeight" value="30" min="1" class="w-full text-center">
+                            <button onclick="adjustValue('boxHeight', 10)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">步驟二：🪵 木材規格設定</h2>
+                <div class="space-y-4">
+                    <div id="woodCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">板寬 (mm)</label>
+                                <div class="number-input-group">
+                                    <button onclick="adjustValue('woodWidth', -1)">-</button>
+                                    <input type="number" id="woodWidth" value="30" min="1" class="w-full text-center">
+                                    <button onclick="adjustValue('woodWidth', 1)">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">板長 (mm)</label>
+                                <div class="number-input-group">
+                                    <button onclick="adjustValue('woodLength', -100)">-</button>
+                                    <input type="number" id="woodLength" value="300" min="1" class="w-full text-center">
+                                    <button onclick="adjustValue('woodLength', 100)">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">板厚 (mm)</label>
+                                <div class="number-input-group">
+                                    <button onclick="adjustValue('woodThickness', -1)">-</button>
+                                    <input type="number" id="woodThickness" value="10" min="1" class="w-full text-center">
+                                    <button onclick="adjustValue('woodThickness', 1)">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">數量 (隻)</label>
+                                <div class="number-input-group">
+                                    <button onclick="adjustValue('woodCount', -1)">-</button>
+                                    <input type="number" id="woodCount" value="1" min="1" class="w-full text-center">
+                                    <button onclick="adjustValue('woodCount', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">鋸縫寬度 (mm)</label>
+                                <div class="number-input-group">
+                                    <button onclick="adjustValue('sawKerf', -0.5)">-</button>
+                                    <input type="number" id="sawKerf" value="2.0" min="0" step="0.1" class="w-full text-center">
+                                    <button onclick="adjustValue('sawKerf', 0.5)">+</button>
+                                </div>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">木材管理</label>
+                                <div class="flex space-x-2">
+                                    <button onclick="addWoodSpec()" class="flex-1 py-2 px-4 rounded-full text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 transition-colors">
+                                        新增規格
+                                    </button>
+                                    <button onclick="updateWoodSpec()" class="flex-1 py-2 px-4 rounded-full text-sm font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 transition-colors">
+                                        更新規格
+                                    </button>
+                                    <button onclick="deleteWoodSpec()" class="flex-1 py-2 px-4 rounded-full text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors">
+                                        刪除規格
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">步驟三：🧩 切割方式與說明</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex flex-col items-center space-y-2 p-4 border-2 border-transparent rounded-lg cursor-pointer transition-colors has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                        <input type="radio" name="method" value="1" class="form-radio text-amber-500 focus:ring-amber-500" checked>
+                        <span class="font-medium text-gray-800">方式一：環形黏接</span>
+                        <img src="環形黏接.png" alt="環形黏接示意圖" class="mt-2 w-32 h-auto" />
+                    </label>
+                    <label class="flex flex-col items-center space-y-2 p-4 border-2 border-transparent rounded-lg cursor-pointer transition-colors has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                        <input type="radio" name="method" value="2" class="form-radio text-amber-500 focus:ring-amber-500">
+                        <span class="font-medium text-gray-800">方式二：對稱黏接</span>
+                        <img src="對稱黏接.png" alt="對稱黏接示意圖" class="mt-2 w-32 h-auto" />
+                    </label>
+                </div>
+                
+                <hr class="my-6 border-t border-gray-200">
+
+                <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">方式一：環形黏接</h4>
+                        <p>長邊和短邊的木條都從盒子外徑扣掉2倍板厚後黏接，底板尺寸等於盒子內徑</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">方式二：對稱黏接</h4>
+                        <p>長邊木條與盒子外徑相同，短邊木條則從盒子外徑扣掉2倍板厚後黏接，底板尺寸等於盒子外徑</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">步驟四：📊 計算結果</h2>
+                
+                <div id="results" class="text-center text-gray-500 py-8">
+                    <div class="text-4xl mb-2">🔢</div>
+                    <p>請點擊計算按鈕</p>
+                </div>
+                <div class="mt-4">
+                    <button onclick="downloadPDF()" class="w-full py-3 px-4 rounded-full text-white bg-green-600 hover:bg-green-700 transition-colors font-semibold">
+                        ⬇️ 下載 PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">步驟五：📏 詳細切割尺寸</h2>
+                
+                <div id="cuttingDetails" class="text-center text-gray-500 py-8">
+                    <div class="text-4xl mb-2">📐</div>
+                    <p>點擊上方計算按鈕</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

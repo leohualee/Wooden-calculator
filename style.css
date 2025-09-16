@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
+
+body { 
+    font-family: 'Noto Sans TC', sans-serif; 
+}
+
+.number-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 9999px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.number-input-group:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.number-input-group button {
+    background: #f3f4f6;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.number-input-group button:hover {
+    background: #e5e7eb;
+}
+
+.number-input-group input {
+    border: none;
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    min-width: 0; /* 新增: 確保輸入框在縮小後不會溢出 */
+}
